@@ -1,0 +1,7 @@
+Keras==2.1.6
+numpy==1.14.2
+six==1.11.0
+gym==0.10.5
+atari-py==0.1.1
+Pillow==5.0.0
+h5py==2.7.1
