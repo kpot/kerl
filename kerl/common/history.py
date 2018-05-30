@@ -63,6 +63,8 @@ class TrainHistoryRecorder:
         self.num_steps = num_steps
         self.record_buffer = []  # type: List[HistoryRecord]
         self.last_record = None  # type: Optional[HistoryRecord]
+        self.prev_obs_since_restart = 0
+        self.restart_time = datetime.datetime.now()
         if os.path.exists(history_file_path):
             with open(history_file_path, 'rt') as f:
                 last_line = None
@@ -107,20 +109,25 @@ class TrainHistoryRecorder:
             print('Average reward:', self.moving_average_reward,
                   'last exact reward:', mean_completed_reward)
             # recording
-            total_observations = (
-                    (step_idx + 1) *
-                    self.num_steps * len(episode_rewards))
+            now = datetime.datetime.now()
+            observations_since_restart = (
+                    (step_idx + 1) * self.num_steps * len(episode_rewards))
             if self.last_record is None:
-                diff_seconds = 0
-                diff_observations = total_observations
+                # We're starting a new history file
+                diff_seconds = (now - self.restart_time).total_seconds()
+                diff_observations = observations_since_restart
+                total_observations = observations_since_restart
             else:
-                diff_seconds = (
-                   (datetime.datetime.now() - self.last_record.date_time)
-                   .total_seconds())
-                diff_observations = (
-                    total_observations - self.last_record.num_observations)
+                prev_record_time = (
+                    self.restart_time if self.prev_obs_since_restart == 0
+                    else self.last_record.date_time)
+                diff_seconds = (now - prev_record_time).total_seconds()
+                diff_observations = (observations_since_restart -
+                                     self.prev_obs_since_restart)
+                total_observations = (self.last_record.num_observations +
+                                      diff_observations)
             new_record = HistoryRecord(
-                date_time=datetime.datetime.now(),
+                date_time=now,
                 exact_reward=mean_completed_reward,
                 average_reward=self.moving_average_reward,
                 num_observations=total_observations,
@@ -128,6 +135,7 @@ class TrainHistoryRecorder:
                 diff_observations=diff_observations)
             self.record_buffer.append(new_record)
             self.last_record = new_record
+            self.prev_obs_since_restart = observations_since_restart
 
     def flush_records(self):
         """
