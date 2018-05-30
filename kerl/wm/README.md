@@ -49,10 +49,10 @@ and the RNN (LSTM) having 512 units, performed using following command:
 
 Increasing dimensionality of *z* from 128 to 512 as well as the number of LSTM
 units from 512 to 1024 does not improve the performance. Both versions
-reach average score of about 1250 in MsPacman after about 30M iterations
-and do not improve any further during the next 30M steps of training.
+reach average score of about 1250 in MsPacman after about 30M observations
+and do not improve any further during the next 30M observations.
 This isn't a great score for Pacman, the game where many model-free algorithms
-easily achieve score above 3000.
+easily achieve score above 3000 after 1M-10M of observations.
 
 Perhaps such poor results can be explained by the level of "noise"
 in observations over time, caused by VAE's imperfections in encoding.
