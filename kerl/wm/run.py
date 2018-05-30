@@ -46,9 +46,12 @@ class WMLauncher(Launcher):
         video_recorder = MovieWriter(self.options.record, movie_width=1024)
         obs_shape = env.observation_space.shape
         # Creating small images for spacing frames and labeling them
-        frame_labels, frame_spacer = self.video_spacer_and_labels(
+        frame_labels1, frame_spacer = self.video_spacer_and_labels(
             obs_shape,
-            ['Past observation', 'After VAE', 'Predicted future', 'Future'])
+            ['Past observation', 'After VAE'])
+        frame_labels2, _ = self.video_spacer_and_labels(
+            obs_shape,
+            ['Predicted future', 'Future'])
         while not done:
             prev_observation = observation[0, :, :, :, -1].copy()
             _, _, encoded_prev_observation = agent.vae.compress(
@@ -79,23 +82,26 @@ class WMLauncher(Launcher):
             # decoded_new_observation = agent._vae.decompress(
             #     encoded_new_observation)
 
-            base_frame = np.uint8(
+            base_frame1 = np.uint8(
                 255 *
                 np.concatenate(
                     [prev_observation,
                      frame_spacer,
-                     decoded_prev_observation[0],
-                     frame_spacer,
-                     decoded_env_predictions[0],
+                     decoded_prev_observation[0]],
+                    axis=1),
+            )
+            base_frame2 = np.uint8(
+                255 *
+                np.concatenate(
+                    [decoded_env_predictions[0],
                      frame_spacer,
                      new_observation],
                     axis=1))
             frame = np.concatenate(
-                [frame_labels, base_frame],
+                [frame_labels1, base_frame1, frame_labels2, base_frame2],
                 axis=0)
             video_recorder.save_frame(frame)
             print('Recorded frames:', video_recorder.frame_counter)
-
             total_score += rewards.sum()
         print('Full episode reward:', total_score)
         video_recorder.finish()
@@ -105,9 +111,10 @@ class WMLauncher(Launcher):
         frame_spacer = np.zeros((obs_shape[0], 11, obs_shape[2]))
         font = ImageFont.load_default()
         sample_text_size = font.getsize('SAMPLE')
+        num_obs = len(labels)
         frame_labels = Image.new(
             'RGB',
-            (3 * frame_spacer.shape[1] + 4 * obs_shape[1],
+            ((num_obs - 1) * frame_spacer.shape[1] + num_obs * obs_shape[1],
              sample_text_size[1] + 4),
             (0, 0, 0))
         draw = ImageDraw.Draw(frame_labels, 'RGB')
