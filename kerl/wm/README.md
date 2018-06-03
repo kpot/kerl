@@ -1,5 +1,5 @@
-World Models
-============
+World Models implementation using Keras
+=======================================
 This is an attempt to reproduce an interesting paper ["World Models"](https://arxiv.org/abs/1803.10122)
 written by David Ha and Jürgen Schmidhuber.
 

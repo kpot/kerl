@@ -1,5 +1,5 @@
-KERL
-====
+KERL: Reinforcement Learning using Keras
+========================================
 KERL is a collection of various Reinforcement Learning algorithms and related
 techniques implemented purely using Keras.
 
@@ -13,7 +13,7 @@ This makes KERL very similar to
 
 With KERL you can quickly train various agents to play Atari games from pixels
 and dive into details of their implementation. Here's an example of such agent
-trained with KERL:
+trained with KERL (link to a youtube video):
 
 [![Watch A2C agent playing Ms.Pacman](https://img.youtube.com/vi/odMpY3ogbUE/0.jpg)](http://www.youtube.com/watch?v=odMpY3ogbUE)
 
